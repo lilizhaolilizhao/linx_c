@@ -20,15 +20,15 @@ void function_006();
 
 void function_007();
 
-main() {
-//    function_001();
-//    function_002();
-//    function_003();
-//    function_004();
-//    function_005();
-//    function_006();
-    function_007();
-}
+//main() {
+////    function_001();
+////    function_002();
+////    function_003();
+////    function_004();
+////    function_005();
+////    function_006();
+//    function_007();
+//}
 
 void function_007() {
     int number, guess, i = 8;
