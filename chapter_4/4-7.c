@@ -8,11 +8,73 @@ void function_401();
 
 void function_402();
 
+void function_403();
+
+void function_404();
+
+void function_405();
+
 int main() {
 //    function_401();
-    function_402();
+//    function_402();
+//    function_403();
+//    function_404();
+    function_405();
 
     return 0;
+}
+
+void function_405() {
+    int a[5] = {1, 3, 5, 7, 9};
+    int *p[5], i;
+    int **pp = p;
+
+    for (i = 0; i < 5; i++)
+        p[i] = &a[i];
+
+    for (i = 0; i < 5; i++)
+        printf("%d ", *p[i]);
+    printf("\n");
+
+    for (i = 0; i < 5; i++, pp++)
+        printf("%d ", **pp);
+}
+
+void function_404() {
+    int a[10], i, *p = NULL;
+
+    for (i = 0; i < 10; i++)
+        a[i] = i;
+
+    for (i = 0; i < 10; i++)
+        printf("%d ", a[i]);
+    printf("\n");
+
+    for (i = 0; i < 10; i++)
+        printf("%d ", *(a + i));
+    printf("\n");
+
+    for (p = a; p < a + 10;)
+        printf("%d ", *p++);
+    printf("\n");
+}
+
+void function_403() {
+    int a = 100, b = 200;
+    int *p1 = &a, *p2 = &b;
+
+    printf("%d,%d\n", a, b);
+    printf("%d,%d\n", *p1, *p2);
+    printf("%x,%x\n", &a, &b);
+    printf("%x,%x\n\n", p1, p2);
+
+    *p1 = *p1 * 3;
+    printf("%d\n", a);
+    printf("%d\n\n", *p1);
+
+    p1 = &b;
+    printf("%x\n", p1);
+    printf("%x\n", p2);
 }
 
 void function_402() {
