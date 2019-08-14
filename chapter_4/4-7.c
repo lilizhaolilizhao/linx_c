@@ -14,14 +14,32 @@ void function_404();
 
 void function_405();
 
+void function_406();
+
 int main() {
 //    function_401();
 //    function_402();
 //    function_403();
 //    function_404();
-    function_405();
+//    function_405();
+    function_406();
 
     return 0;
+}
+
+void function_406() {
+    int a[2][5] = {1, 3, 5, 7, 9, 2, 4, 6, 8, 10};
+    int (*p)[5], i;
+
+    p = a;
+    for (i = 0; i < 5; i++)
+        printf("%d ", (*p)[i]);
+    printf("\n");
+
+    p++;
+    for (i = 0; i < 5; i++)
+        printf("%d ", (*p)[i]);
+    printf("\n");
 }
 
 void function_405() {
