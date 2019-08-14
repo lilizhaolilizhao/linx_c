@@ -16,15 +16,98 @@ void function_405();
 
 void function_406();
 
+void function_407();
+
+void change(int a, int *pInt);
+
+void function_408();
+
+char *week(int day);
+
+void function_409();
+
+char *name[7] = {"Monday", "Tuesday", "Wednesday", "Thursday",
+                 "Friday", "Saturday", "Sunday"};
+char *message = "wrong input";
+
+#define  GET_MAX    0
+#define  GET_MIN    1
+
+
+int get_max(int i, int j) {
+    return i > j ? i : j;
+}
+
+int get_min(int i, int j) {
+    return i > j ? j : i;
+}
+
+int compare(int i, int j, int flag) {
+    int ret;
+    int (*p)(int, int);
+
+    if (flag == GET_MAX)
+        p = get_max;
+    else
+        p = get_min;
+
+    ret = p(i, j);
+
+    return ret;
+}
+
 int main() {
 //    function_401();
 //    function_402();
 //    function_403();
 //    function_404();
 //    function_405();
-    function_406();
+//    function_406();
+//    function_407();
+//    function_408();
+    function_409();
 
     return 0;
+}
+
+void function_409() {
+    int i = 5, j = 10, ret;
+
+    ret = compare(i, j, GET_MAX);
+    printf("The MAX is %d\n", ret);
+}
+
+void function_408() {
+    int day;
+    char *p;
+
+    printf("Input a number of a week:\n");
+    scanf("%d", &day);
+
+    p = week(day);
+    printf("%s\n", p);
+}
+
+char *week(int day) {
+    if (day < 0 || day > 7)
+        return message;
+    else
+        return name[day - 1];
+}
+
+void function_407() {
+    int a = 5, b = 10;
+
+    change(a, &b);
+    printf("a=%d b=%d\n", a, b);
+}
+
+void change(int i, int *p) {
+    i++;
+
+    if (p != NULL) {
+        (*p)++;
+    }
 }
 
 void function_406() {
