@@ -26,6 +26,8 @@ char *week(int day);
 
 void function_409();
 
+void function_410();
+
 char *name[7] = {"Monday", "Tuesday", "Wednesday", "Thursday",
                  "Friday", "Saturday", "Sunday"};
 char *message = "wrong input";
@@ -65,9 +67,32 @@ int main() {
 //    function_406();
 //    function_407();
 //    function_408();
-    function_409();
+//    function_409();
+    function_410();
 
     return 0;
+}
+
+void function_410() {
+    char a[] = "Linux C Program", b[20], c[20];
+    int i;
+
+    for (i = 0; *(a + i) != '\0'; i++) {
+        *(b + i) = *(a + i);
+    }
+    *(b + i) = '\0';
+
+    char *p1, *p2;
+    p1 = a;
+    p2 = c;
+
+    for (; *p1 != '\0'; p1++, p2++)
+        *p2 = *p1;
+    *p2 = '\0';
+
+    printf("%s\n", a);
+    printf("%s\n", b);
+    printf("%s\n", c);
 }
 
 void function_409() {
