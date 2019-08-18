@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include "string.h"
 
 void function_401();
 
@@ -84,11 +85,61 @@ int main() {
 }
 
 void function_char_test() {
-    char a[] = "Welcome to ";
-    char *p = "Linux C Program";
+//    char a[] = "Welcome to ";
+//    char *p = "Linux C Program";
+//
+//    puts(a);
+//    puts(p);
+//    char string[20];
+//    gets(string);
+//    puts(string);
 
-    puts(a);
-    puts(p);
+    //字符串拷贝
+//    char *s = "Hello World!!!!!!!";
+//    char d1[20], d2[20];
+//    strcpy(d1, s);
+//    strncpy(d2, s, strlen(s));
+//
+//    printf("%s\n%s\n", d1, d2);
+
+    //字符串连接
+//    char d[20] = "Hello ";
+//    char *s = "Word";
+//    strcat(d, s);
+//
+//    printf("%s\n", d);
+
+//    //字符串比较
+//    char *s1 = "compare";
+//    char *s2 = "computer";
+//    if (strcmp(s1, s2) == 0) {
+//        printf("0000000000");
+//    } else if (strcmp(s1, s2) > 0) {
+//        printf("1111111111");
+//    } else {
+//        printf("22222222222");
+//    }
+
+//    //字符串长度
+//    char string[10] = "China";
+//    printf("%d\n", strlen(string));
+
+    //查找字串
+    char *s1 = "Linux C Program", *s2 = "nux", *p;
+
+    p = strstr(s1, s2);
+    if (p != NULL) {
+        printf("%s\n", p);
+    } else {
+        printf("Not Found!");
+    }
+
+    p = strchr(s1, 'C');
+    if (p != NULL) {
+        printf("%s\n", p);
+    } else {
+        printf("Not Found!");
+    }
 }
 
 void function_4_18() {
