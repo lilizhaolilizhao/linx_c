@@ -37,13 +37,38 @@ void copy_string2(char a[16], char string[20]);
 
 void function_char_test();
 
+void function_4_32();
+
+void function_4_33();
+
+void function_4_34();
+
+void test1();
+
+void test2();
+
+void test3();
+
+void function_4_35();
+
+int sum(int a);
+
+void function_4_36();
+
+int fun(int pInt[6], size_t i);
+
+int fun22_22(int a[], int n);
+
+void function_4_37();
+
+char *RetMemory();
+
 char *name[7] = {"Monday", "Tuesday", "Wednesday", "Thursday",
                  "Friday", "Saturday", "Sunday"};
 char *message = "wrong input";
 
 #define  GET_MAX    0
 #define  GET_MIN    1
-
 
 int get_max(int i, int j) {
     return i > j ? i : j;
@@ -79,9 +104,118 @@ int main() {
 //    function_409();
 //    function_410();
 //    function_4_18();
-    function_char_test();
+//    function_char_test();
+//    function_4_32();
+//    function_4_33();
+//    function_4_34();
+//    function_4_35();
+//    function_4_36();
+    function_4_37();
 
     return 0;
+}
+
+void function_4_37() {
+    char *str = "NULL";
+    str = RetMemory();
+    printf("%s", str);
+}
+
+char *RetMemory() {
+    char p[] = "hello world";
+    return p;
+}
+
+void function_4_36() {
+    int a[] = {1, 2, 3, 4, 5, 6};
+    int b[] = {1, 2, 3, 4, 6, 5};
+
+    if (fun22_22(a, sizeof(a) / sizeof(a[0])) == 1)
+        printf("a:ok\n");
+    else
+        printf("a:no\n");
+
+    if (fun22_22(b, sizeof(a) / sizeof(a[0])) == 1)
+        printf("b:ok\n");
+    else
+        printf("b:no\n");
+}
+
+int fun22_22(int a[], int n) {
+    if (n == 1)
+        return 1;
+    if (n == 2)
+        return (a[n - 1] >= a[n - 2]);
+    return (fun22_22(a, n - 1) && (a[n - 1] >= a[n - 2]));
+}
+
+void function_4_35() {
+    int i;
+    int a = 2;
+    for (i = 0; i < 5; i++) {
+        printf("%d,", sum(a));
+    }
+}
+
+int sum(int a) {
+    auto int c = 0;
+    static int b = 3;
+    c += 1;
+    b += 2;
+    return (a + b + c);
+}
+
+void function_4_34() {
+//    test1();
+//    test2();
+//    test3();
+}
+
+void test3(char *str1) {
+    char string[10];
+    if (strlen(str1) <= 10) {
+        strcpy(string, str1);
+    }
+}
+
+void test2() {
+    char string[10], str1[10];
+    for (int i = 0; i < 9; i++) {
+        str1[i] = 'a';
+        str1[9] = '\0';
+        strcpy(string, str1);
+    }
+
+    printf("%s\n%s", string, str1);
+}
+
+//detected buffer overflow
+void test1() {
+    char string[11];
+    char *str1 = "0123456789";
+    strcpy(string, str1);
+
+    printf("%s\n%s", string, str1);
+}
+
+void reverse(char *p) {
+    if (*p == '\0')
+        return;
+    reverse(p + 1);
+    printf("%c", *p);
+}
+
+void function_4_33() {
+    reverse("abcd");
+
+    printf("\n");
+}
+
+void function_4_32() {
+    int **p, *q;
+    int arr[100];
+    q = arr;
+    p = &q;
 }
 
 void function_char_test() {
