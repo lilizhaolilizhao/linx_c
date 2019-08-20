@@ -99,30 +99,30 @@ int compare(int i, int j, int flag) {
     return ret;
 }
 
-int main() {
-//    function_401();
-//    function_402();
-//    function_403();
-//    function_404();
-//    function_405();
-//    function_406();
-//    function_407();
-//    function_408();
-//    function_409();
-//    function_410();
-//    function_4_18();
-//    function_char_test();
-//    function_4_32();
-//    function_4_33();
-//    function_4_34();
-//    function_4_35();
-//    function_4_36();
-//    function_4_37();
-//    function_4_38();
-    function_4_39();
-
-    return 0;
-}
+//int main() {
+////    function_401();
+////    function_402();
+////    function_403();
+////    function_404();
+////    function_405();
+////    function_406();
+////    function_407();
+////    function_408();
+////    function_409();
+////    function_410();
+////    function_4_18();
+////    function_char_test();
+////    function_4_32();
+////    function_4_33();
+////    function_4_34();
+////    function_4_35();
+////    function_4_36();
+////    function_4_37();
+////    function_4_38();
+//    function_4_39();
+//
+//    return 0;
+//}
 
 void function_4_39() {
     char str[] = "ABCD1234efgh";
