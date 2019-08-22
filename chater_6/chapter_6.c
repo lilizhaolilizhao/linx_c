@@ -6,11 +6,30 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <zconf.h>
+#include <errno.h>
 
 void my_chomod(int argc, char **argv);
 
+void my_create();
+
 int main(int argc, char **argv) {
-    my_chomod(argc, argv);
+//    my_chomod(argc, argv);
+    my_create();
+}
+
+void my_create() {
+    int fd;
+
+    if ((fd = open("lilizhao.c", O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)) == -1) {
+        perror("open");
+        exit(1);
+    } else {
+        printf("create file success\n");
+    }
+
+    close(fd);
 }
 
 void my_chomod(int argc, char **argv) {
