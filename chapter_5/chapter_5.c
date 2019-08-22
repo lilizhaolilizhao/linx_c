@@ -20,16 +20,16 @@ void function_5_005();
 
 void function_5_011();
 
-int main() {
-//    function_5_001();
-//    function_5_002();
-//    function_5_003();
-//    function_5_004();
-//    function_5_005();
-    function_5_011();
-
-    return 0;
-}
+//int main() {
+////    function_5_001();
+////    function_5_002();
+////    function_5_003();
+////    function_5_004();
+////    function_5_005();
+//    function_5_011();
+//
+//    return 0;
+//}
 
 void function_5_011() {
     struct data {
