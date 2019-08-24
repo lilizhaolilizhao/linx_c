@@ -12,12 +12,14 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
+#include <limits.h>
+#include <dirent.h>
 
-unsigned char	g_eth_name[16];
-unsigned char	g_macaddr[6];
-unsigned int	g_subnetmask;
-unsigned int	g_ipaddr;
-unsigned int	g_broadcast_ipaddr;
+unsigned char g_eth_name[16];
+unsigned char g_macaddr[6];
+unsigned int g_subnetmask;
+unsigned int g_ipaddr;
+unsigned int g_broadcast_ipaddr;
 
 void my_chomod(int argc, char **argv);
 
@@ -39,13 +41,239 @@ int lock_set(int fd, struct flock *lock);
 
 void ioctl_net();
 
+void my_chmod_llz(int argc, char **argv);
+
+void test_unmask();
+
+void my_mv();
+
+void unlink_temp();
+
+void my_cd(int argc, char **argv);
+
+void show_files(int argc, char **argv);
+
+int my_readir(char *path);
+
+int my_ls(int argc, char **argv);
+
 int main(int argc, char **argv) {
 //    my_chomod(argc, argv);
 //    my_create();
 //    my_rwl();
 //    fcntl_access();
 //    fcntl_lock();
-    ioctl_net();
+//    ioctl_net();
+//    my_chmod_llz(argc, argv);
+//    test_unmask();
+//    my_mv(argc, argv);
+//    unlink_temp();
+//    my_cd(argc, argv);
+//    show_files(argc, argv);
+    my_ls(argc, argv);
+}
+
+int my_ls(int argc, char **argv) {
+    int		i, j, k, num;
+    char		path[PATH_MAX+1];
+    char		param[32];	      // 保存命令行参数，目标文件名和目录名不在此列
+    int		flag_param = PARAM_NONE; // 用来标志参数种类，即是否有-l和-a选项
+    struct stat	buf;
+
+
+    /*命令行参数的解析，分析-l、-a、-al、-la选项*/
+    j   = 0,
+            num = 0;
+    for (i=1; i<argc; i++) {
+        if (argv[i][0] == '-') {
+            for(k=1; k < strlen(argv[i]); k++,j++) {
+                param[j] = argv[i][k];	// 获取-后面的参数保存到数组param中
+            }
+            num++;  // 保存"－"的个数
+        }
+    }
+
+    /*只支持参数a和l，如果含有其他选项就报错*/
+    for(i=0; i<j; i++) {
+        if (param[i] == 'a') {
+            flag_param |= PARAM_A;
+            continue;
+        } else if (param[i] == 'l') {
+            flag_param |= PARAM_L;
+            continue;
+        } else {
+            printf("my_ls: invalid option -%c\n", param[i]);
+            exit(1);
+        }
+    }
+    param[j] = '\0';
+
+    // 如果没有输入文件名或目录，就显示当前目录
+    if ((num + 1) == argc) {
+        strcpy(path, "./");
+        path[2] = '\0';
+        display_dir(flag_param, path);
+        return 0;
+    }
+
+    i=1;
+    do {
+        // 如果不是目标文件名或目录，解析下一个命令行参数
+        if (argv[i][0] == '-') {
+            i++;
+            continue;
+        } else {
+            strcpy(path, argv[i]);
+
+            // 如果目标文件或目录不存在，报错并退出程序
+            if ( stat(path, &buf) == -1 )
+                my_err("stat", __LINE__);
+
+            if ( S_ISDIR(buf.st_mode) ) {   // argv[i]是一个目录
+                // 如果目录的最后一个字符不是'/'，就加上'/'
+                if ( path[ strlen(argv[i])-1 ] != '/') {
+                    path[ strlen(argv[i]) ] = '/';
+                    path[ strlen(argv[i])+1 ] = '\0';
+                }
+                else
+                    path[ strlen(argv[i]) ] = '\0';
+
+                display_dir(flag_param,path);
+                i++;
+            }
+            else {  //argv[i]是一个文件
+                display(flag_param, path);
+                i++;
+            }
+        }
+    } while (i<argc);
+}
+
+void show_files(int argc, char **argv) {
+    if (argc < 2) {
+        printf("listfile <target path>\n");
+        exit(1);
+    }
+
+    if (my_readir(argv[1]) < 0) {
+        exit(1);
+    }
+}
+
+int my_readir(char *path) {
+    DIR *dir;
+    struct dirent *ptr;
+
+    if ((dir = opendir(path)) == NULL) {
+        perror("opendir");
+        return -1;
+    }
+    while ((ptr = readdir(dir)) != NULL) {
+        printf("file name: %s\n", ptr->d_name);
+    }
+    closedir(dir);
+
+    return 0;
+}
+
+void my_cd(int argc, char **argv) {
+    char buf[PATH_MAX + 1];
+
+    if (argc < 2) {
+        printf("my_cd <target path>\n");
+        exit(1);
+    }
+
+    if (chdir(argv[1]) < 0) {
+        my_err("chdir", __LINE__);
+    }
+    if (getcwd(buf, 512) < 0) {
+        my_err("getcwd", __LINE__);
+    }
+
+    printf("%s\n", buf);
+}
+
+void unlink_temp() {
+    int fd;
+    char buf[32];
+
+    if ((fd = open("temp", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU)) < 0) {
+        my_err("open", __LINE__);
+    }
+    if (unlink("temp") < 0) {
+        my_err("unlink", __LINE__);
+    }
+    printf("file unlinked\n");
+
+    if (write(fd, "temp", 5) < 0) {
+        my_err("write", __LINE__);
+    }
+    if ((lseek(fd, 0, SEEK_SET)) == -1) {
+        my_err("lseek", __LINE__);
+    }
+    if (read(fd, buf, 5) < 0) {
+        my_err("read", __LINE__);
+    }
+    printf("%s\n", buf);
+}
+
+void my_mv(int argc, char **argv) {
+    /*检查参数个数的合法性*/
+    if (argc < 3) {
+        printf("my_mv <old file> <new file>\n");
+        exit(0);
+    }
+
+    if (rename(argv[1], argv[2]) < 0) {
+        perror("rename");
+        exit(1);
+    }
+}
+
+void test_unmask() {
+    umask(0);    // 不屏蔽任何权限
+    if (creat("example_681.test", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
+        perror("creat 1111");
+        exit(1);
+    }
+
+    umask(S_IRWXO);    // 屏蔽其它用户的所以权限
+    if (creat("example_682.test", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
+        perror("creat");
+        exit(1);
+    }
+}
+
+void my_chmod_llz(int argc, char **argv) {
+    struct stat buf;
+    if (argc != 2) {
+        printf("Usage: my_stat <filename>\n");
+        exit(0);
+    }
+
+    // 获取文件属性
+    if (stat(argv[1], &buf) == -1) {
+        perror("stat:");
+        exit(1);
+    }
+
+    // 打印出文件属性
+    printf("device is: %d\n", buf.st_dev);
+    printf("inode is: %d\n", buf.st_ino);
+    printf("mode is: %o\n", buf.st_mode);
+    printf("number of hard links  is: %d\n", buf.st_nlink);
+    printf("user ID of owner is: %d\n", buf.st_uid);
+    printf("group ID of owner is: %d\n", buf.st_gid);
+    printf("device type (if inode device) is: %d\n", buf.st_rdev);
+
+    printf("total size, in bytes is: %d\n", buf.st_size);
+    printf(" blocksize for filesystem I/O is: %d\n", buf.st_blksize);
+    printf("number of blocks allocated is: %d\n", buf.st_blocks);
+
+    printf("time of last access is: %s", ctime(&buf.st_atime));
+    printf("time of last modification is: %s", ctime(&buf.st_mtime));
+    printf("time of last change is: %s", ctime(&buf.st_ctime));
 }
 
 /*初始化网络，获取当前网络设备的信息*/
