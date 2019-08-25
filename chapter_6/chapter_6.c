@@ -55,21 +55,21 @@ void show_files(int argc, char **argv);
 
 int my_readir(char *path);
 
-int main(int argc, char **argv) {
-//    my_chomod(argc, argv);
-//    my_create();
-//    my_rwl();
-//    fcntl_access();
-//    fcntl_lock();
-//    ioctl_net();
-//    my_chmod_llz(argc, argv);
-//    test_unmask();
-//    my_mv(argc, argv);
-//    unlink_temp();
-//    my_cd(argc, argv);
+//int main(int argc, char **argv) {
+////    my_chomod(argc, argv);
+////    my_create();
+////    my_rwl();
+////    fcntl_access();
+////    fcntl_lock();
+////    ioctl_net();
+////    my_chmod_llz(argc, argv);
+////    test_unmask();
+////    my_mv(argc, argv);
+////    unlink_temp();
+////    my_cd(argc, argv);
+////    show_files(argc, argv);
 //    show_files(argc, argv);
-    show_files(argc, argv);
-}
+//}
 
 void show_files(int argc, char **argv) {
     if (argc < 2) {
