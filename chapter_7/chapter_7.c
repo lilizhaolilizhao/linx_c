@@ -37,17 +37,138 @@ void processimage(int argc, char *argv[], char **environ);
 
 void execve_test();
 
+void wait_test();
+
+void getpid_test();
+
+void studyuid();
+
 int globVar = 5;
 
-int main(int argc, char *argv[], char **environ) {
-//    fork_test1();
-//    fork_test2();
-//    fork_test3();
-//    difffork();
-//    init_daemon_main();
-//    env(argc, argv);
-//    processimage(argc, argv, environ);
-    execve_test();
+void mynice();
+
+//int main(int argc, char *argv[], char **environ) {
+////    fork_test1();
+////    fork_test2();
+////    fork_test3();
+////    difffork();
+////    init_daemon_main();
+////    env(argc, argv);
+////    processimage(argc, argv, environ);
+////    execve_test();
+////    wait_test();
+////    getpid_test();
+////    studyuid();
+//    mynice();
+//}
+
+void mynice() {
+    pid_t pid;
+    int stat_val = 0;
+    int oldpri, newpri;
+
+    printf("nice study\n");
+
+    pid = fork();
+    switch (pid) {
+        case 0:
+            printf("Child is running,CurPid is %d,ParentPid is %d\n", pid, getppid());
+
+            oldpri = getpriority(PRIO_PROCESS, 0);
+            printf("Old priority = %d\n", oldpri);
+
+            newpri = nice(2);
+            printf("New priority = %d\n", newpri);
+
+            exit(0);
+        case -1:
+            perror("Process creation failed\n");
+            break;
+        default:
+            printf("Parent is running,ChildPid is %d,ParentPid is %d\n", pid, getpid());
+            break;
+    }
+
+    wait(&stat_val);
+    exit(0);
+}
+
+extern int errno;
+
+void studyuid() {
+    int fd;
+
+    printf("uid study: \n");
+    printf("Process's uid = %d,euid = %d\n", getuid(), geteuid());
+
+    // strerror函数获取指定错误码的提示信息
+// strerror函数获取指定错误码的提示信息
+    if ((fd = open("test.c", O_RDWR)) == -1) {
+        printf("Open failure,errno is %d :%s \n", errno, strerror(errno));
+        exit(1);
+    } else {
+        printf("Open successfully!\n");
+    }
+
+    close(fd);
+}
+
+void getpid_test() {
+    pid_t pid;
+
+    if ((pid = fork()) == -1) {
+        printf("fork error!\n");
+        exit(1);
+    }
+
+    if (pid == 0)
+        printf("getpid return %d\n", getpid());
+
+    exit(0);
+}
+
+void wait_test() {
+    pid_t pid;
+    char *msg;
+    int k;
+    int exit_code;
+
+    printf("Study how to get exit code\n");
+    pid = fork();
+    switch (pid) {
+        case 0:
+            msg = "Child process is running";
+            k = 5;
+            exit_code = 37;
+            break;
+        case -1:
+            perror("Process creation failed\n");
+            exit(1);
+        default:
+            exit_code = 0;
+            break;
+    }
+
+    /* 父子进程都会执行以下这段代码子进程中pid值为0，父进程pid值为子进程的ID  */
+    if (pid != 0) {  // 父进程等待子进程结束
+        int stat_val;
+        pid_t child_pid;
+
+        child_pid = wait(&stat_val);
+
+        printf("Child procee has exited, pid = %d\n", child_pid);
+        if (WIFEXITED(stat_val))
+            printf("Child exited with code %d\n", WEXITSTATUS(stat_val));
+        else
+            printf("Child exited abnormally\n");
+    } else {   // 子进程暂停5秒，在这个过程中可以运行命令ps aux查看父进程状态
+        while (k-- > 0) {
+            puts(msg);
+            sleep(1);
+        }
+    }
+
+    exit(exit_code);
 }
 
 void execve_test(int argc, char *argv[], char **environ) {
