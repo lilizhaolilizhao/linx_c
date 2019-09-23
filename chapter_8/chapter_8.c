@@ -15,6 +15,8 @@ void run(void) {
 
 void oncerun();
 
+void jointhread_test();
+
 int *thread(void *arg) {
     pthread_t newthid;
 
@@ -23,9 +25,25 @@ int *thread(void *arg) {
     return NULL;
 }
 
+void assisthread(void *arg) {
+    printf("I am helping to do some jobs\n");
+    sleep(3);
+    pthread_exit(0);
+}
+
 int main(int argc, char *argv[], char **environ) {
 //    createthread();
-    oncerun();
+//    oncerun();
+    jointhread_test();
+}
+
+void jointhread_test() {
+    pthread_t assistthid;
+    int status;
+
+    pthread_create(&assistthid, NULL, (void *) assisthread, NULL);
+    pthread_join(assistthid, (void *) &status);
+    printf("assistthread's exit is caused %d\n", status);
 }
 
 void *thread1(void *arg) {
