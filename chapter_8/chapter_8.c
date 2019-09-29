@@ -17,6 +17,8 @@ void oncerun();
 
 void jointhread_test();
 
+void tsd();
+
 int *thread(void *arg) {
     pthread_t newthid;
 
@@ -34,7 +36,39 @@ void assisthread(void *arg) {
 int main(int argc, char *argv[], char **environ) {
 //    createthread();
 //    oncerun();
-    jointhread_test();
+//    jointhread_test();
+    tsd();
+}
+
+pthread_key_t key;
+
+void *thread200(void *arg) {
+    int tsd = 5;
+
+    printf("thread %d is running\n", pthread_self());
+    pthread_setspecific(key, (void *) tsd);
+    printf("thread %d returns %d\n", pthread_self(), pthread_getspecific(key));
+}
+
+void *thread100(void *arg) {
+    int tsd = 0;
+    pthread_t thid2;
+
+    printf("thread %d is running\n", pthread_self());
+    pthread_setspecific(key, (void *) tsd);
+    pthread_create(&thid2, NULL, thread200, NULL);
+    sleep(5);
+    printf("thread %d returns %d\n", pthread_self(), pthread_getspecific(key));
+}
+
+void tsd() {
+    pthread_t thid1;
+    printf("main thread begins running\n");
+    pthread_key_create(&key, NULL);
+    pthread_create(&thid1, NULL, thread100, NULL);
+    sleep(300);
+    pthread_key_delete(key);
+    printf("main thread exit\n");
 }
 
 void jointhread_test() {
