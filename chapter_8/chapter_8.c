@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <errno.h>
+#include <string.h>
 
 void createthread();
 
@@ -18,6 +20,10 @@ void oncerun();
 void jointhread_test();
 
 void tsd();
+
+void condition_test();
+
+void checkerror();
 
 int *thread(void *arg) {
     pthread_t newthid;
@@ -37,7 +43,71 @@ int main(int argc, char *argv[], char **environ) {
 //    createthread();
 //    oncerun();
 //    jointhread_test();
-    tsd();
+//    tsd();
+//    condition_test();
+    checkerror();
+}
+
+void checkerror() {
+    FILE *stream;
+    char *filename = "test";
+
+    errno = 0;
+
+    stream = fopen(filename, "r");
+
+    if (stream == NULL) {
+        printf("open file %s failed, errno is %d\n", filename, errno);
+        printf ("can not open the file %s. reason: %s\n", filename, strerror(errno));
+    } else
+        printf("open file %s successfully\n", filename);
+}
+
+pthread_mutex_t mutex;
+pthread_cond_t cond;
+
+
+void *thread1100(void *arg) {
+    pthread_cleanup_push (pthread_mutex_unlock, &mutex);
+
+        while (1) {
+            printf("thread1 is running\n");
+            pthread_mutex_lock(&mutex);
+            pthread_cond_wait(&cond, &mutex);
+            printf("thread1 applied the condition\n");
+            pthread_mutex_unlock(&mutex);
+            sleep(4);
+        }
+
+    pthread_cleanup_pop (0);
+}
+
+void *thread2200(void *arg) {
+    while (1) {
+        printf("thread2 is running\n");
+        pthread_mutex_lock(&mutex);
+        pthread_cond_wait(&cond, &mutex);
+        printf("thread2 applied the condition\n");
+        pthread_mutex_unlock(&mutex);
+        sleep(1);
+    }
+}
+
+void condition_test() {
+    pthread_t tid1, tid2;
+
+    printf("condition variable study! \n");
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond, NULL);
+    pthread_create(&tid1, NULL, (void *) thread1100, NULL);
+    pthread_create(&tid2, NULL, (void *) thread2200, NULL);
+
+    do {
+        pthread_cond_signal(&cond);
+    } while (1);
+
+    sleep(50);
+    pthread_exit(0);
 }
 
 pthread_key_t key;
