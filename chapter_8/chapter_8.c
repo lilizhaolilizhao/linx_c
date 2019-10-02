@@ -39,14 +39,14 @@ void assisthread(void *arg) {
     pthread_exit(0);
 }
 
-int main(int argc, char *argv[], char **environ) {
-//    createthread();
-//    oncerun();
-//    jointhread_test();
-//    tsd();
-//    condition_test();
-    checkerror();
-}
+//int main(int argc, char *argv[], char **environ) {
+////    createthread();
+////    oncerun();
+////    jointhread_test();
+////    tsd();
+////    condition_test();
+//    checkerror();
+//}
 
 void checkerror() {
     FILE *stream;
