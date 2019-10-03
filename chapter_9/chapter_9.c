@@ -10,6 +10,7 @@
 #include <string.h>
 #include <signal.h>
 #include <setjmp.h>
+#include <sys/time.h>
 
 void my_signal_test();
 
@@ -21,9 +22,24 @@ void right_return();
 
 void my_kill();
 
+void simulate_ping();
+
+void test_setitimer();
+
+void sig_mask();
+
+void sig_suspend();
+
 /*信号处理函数*/
 void handler_sigint(int signo) {
     printf("recv SIGINT\n");
+}
+
+/*自定义的错误处理函数*/
+void my_err(const char *err_string, int line) {
+    fprintf(stderr, "line:%d  ", line);
+    perror(err_string);
+    exit(1);
 }
 
 int main(int argc, char *argv[], char **environ) {
@@ -31,7 +47,179 @@ int main(int argc, char *argv[], char **environ) {
 //    my_sigaction();
 //    wrong_return();
 //    right_return();
-    my_kill(argc, argv, environ);
+//    my_kill(argc, argv, environ);
+//    simulate_ping();
+//    test_setitimer();
+//    sig_mask();
+    sig_suspend();
+}
+
+void sig_suspend() {
+    sigset_t newmask, oldmask, zeromask;    // 定义信号集
+
+    /*安装信号处理函数*/
+    if (signal(SIGINT, handler_sigint) == SIG_ERR) {
+        my_err("signal", __LINE__);
+    }
+
+    sigemptyset(&newmask);
+    sigemptyset(&zeromask);
+    sigaddset(&newmask, SIGINT);
+
+    /*屏蔽信号SIGINT*/
+    if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
+        my_err("sigprocmask", __LINE__);
+    } else {
+        printf("SIGINT blocked\n");
+    }
+
+    /*临界区*/
+
+    /*使用sigsuspend取消所有信号的屏蔽并等待信号的触发*/
+    if (sigsuspend(&zeromask) != -1) {  // sigsuspend总是返回-1
+        my_err("sigsuspend", __LINE__);
+    } else {
+        printf("recv a signo, return from sigsuspend\n");
+    }
+
+/*-----------------------------------------
+// 如果使用sigprocmask 加上 pause可能会出现错误
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+		my_err("sigprocmask", __LINE__);
+	}
+	pause();
+-----------------------------------------*/
+
+    /*将信号屏蔽字恢复*/
+    if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+        my_err("sigprocmask", __LINE__);
+    }
+
+    while (1);
+}
+
+/*自定义的错误处理函数*/
+void my_err(const char *err_string, int line) {
+    fprintf(stderr, "line:%d  ", line);
+    perror(err_string);
+    exit(1);
+}
+
+/*SIGINT的处理函数*/
+void hander_sigint(int signo) {
+    printf("recv SIGINT\n");
+}
+
+void sig_mask() {
+    sigset_t newmask, oldmask, pendmask;    // 定义信号集
+
+    /*安装信号处理函数*/
+    if (signal(SIGINT, hander_sigint) == SIG_ERR) {
+        my_err("signal", __LINE__);
+    }
+
+    /*睡眠10秒*/
+    sleep(10);
+
+    /*初始化信号集newmask并将SIGINT添加进去*/
+    sigemptyset(&newmask);
+    sigaddset(&newmask, SIGINT);
+
+    /*屏蔽信号SIGINT*/
+    if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
+        my_err("sigprocmask", __LINE__);
+    } else {
+        printf("SIGINT blocked\n");
+    }
+
+    sleep(10);
+
+    /*获取未决信号队列*/
+    if (sigpending(&pendmask) < 0) {
+        my_err("sigpending", __LINE__);
+    }
+
+    /*检查未决信号队列里面是否有SIGINT*/
+    switch (sigismember(&pendmask, SIGINT)) {
+        case 0:
+            printf("SIGINT is not in pending queue\n");
+            break;
+        case 1:
+            printf("SIGINT is in pending queue\n");
+            break;
+        case -1:
+            my_err("sigismember", __LINE__);
+            break;
+        default:
+            break;
+    }
+
+    /*解除对SIGINT的屏蔽*/
+    if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+        my_err("sigprocmask", __LINE__);
+    } else {
+        printf("SIGINT unblocked\n");
+    }
+
+    while (1);
+}
+
+/*信号处理程序*/
+void handler_sigtime(int signo) {
+    switch (signo) {
+        case SIGALRM:
+            printf("recv SIGALRM\n");
+            break;
+        case SIGPROF:
+            printf("recv SIGPROF\n");
+            break;
+        default:
+            break;
+    }
+}
+
+void test_setitimer() {
+    struct itimerval value;
+
+    /*安装信号处理函数*/
+    signal(SIGALRM, handler_sigtime);
+    signal(SIGPROF, handler_sigtime);
+
+    /*初始化value结构*/
+    value.it_value.tv_sec = 1;            // 第一次1秒触发信号
+    value.it_value.tv_usec = 0;
+    value.it_interval.tv_sec = 5;        // 第二次开始每5秒触发信号
+    value.it_interval.tv_usec = 0;
+
+    /*设置定时器*/
+    setitimer(ITIMER_REAL, &value, NULL);
+    setitimer(ITIMER_PROF, &value, NULL);
+
+    while (1);
+}
+
+void send_ip() {
+    /*发送回送请求报文，这里只是打印消息*/
+    printf("send a icmp echo request packet\n");
+}
+
+void handler_sigalarm(int signo) {
+    send_ip();
+    alarm(2);
+}
+
+void recv_ip() {
+    /*挂起在套接字上等待数据并解析报文，这里只是使用死循环*/
+    while (1);
+}
+
+void simulate_ping() {
+    /*安装信号处理程序*/
+    signal(SIGALRM, handler_sigalarm);
+
+    /*触发一个SIGALRM信号给本进程*/
+    raise(SIGALRM);
+    recv_ip();
 }
 
 void my_kill(int argc, char *argv[], char **environ) {
