@@ -56,7 +56,8 @@ int main(int argc, char *argv[], char **environ) {
 //    rcvmsg_test();
 //    opmsg_test();
 //    server2();
-    client2();
+//    client2();
+
 }
 
 void client2() {
