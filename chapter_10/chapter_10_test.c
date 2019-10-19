@@ -48,17 +48,17 @@ void server2();
 
 void client2();
 
-int main(int argc, char *argv[], char **environ) {
-//    server();
-//    client();
-//    ftok_test();
-//    sendmsg_test();
-//    rcvmsg_test();
-//    opmsg_test();
-//    server2();
-//    client2();
-
-}
+//int main(int argc, char *argv[], char **environ) {
+////    server();
+////    client();
+////    ftok_test();
+////    sendmsg_test();
+////    rcvmsg_test();
+////    opmsg_test();
+////    server2();
+////    client2();
+//
+//}
 
 void client2() {
 /*用户自定义消息缓冲区*/
